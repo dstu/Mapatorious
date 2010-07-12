@@ -7,6 +7,5 @@
 (.pack frame)
 (.setVisible frame true)
 (.addWindowListener frame
-		    (proxy [java.awt.WindowAdapter]
-			(
-			(.dispose frame)))
+		    (proxy [java.awt.event.WindowAdapter] []
+			(windowClosing [e] (.dispose frame))))
