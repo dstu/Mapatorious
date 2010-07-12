@@ -13,3 +13,7 @@ mvn install:install-file -Dfile=/path/to/clojure-1.1.0.jar -DgroupId=org.clojure
 Then, you can compile with:
 
 mvn clojure:compile
+
+You can run with:
+
+mvn clojure:run
