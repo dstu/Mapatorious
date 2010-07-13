@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>blugh</groupId>
+  <groupId>mapatorious</groupId>
   <artifactId>mapatorious</artifactId>
   <packaging>jar</packaging>
   <version>1.0-SNAPSHOT</version>
@@ -15,7 +15,7 @@
       <plugin>
 	<groupId>com.theoryinpractise</groupId>
 	<artifactId>clojure-maven-plugin</artifactId>
-	<version>1.3.1</version>
+	<version>1.3.2</version>
 
 	<configuration>
 	  <sourceDirectories>
@@ -47,48 +47,33 @@
       </plugin>
     </plugins>
   </build>
+
   <dependencies>
     <dependency>
       <groupId>org.clojure</groupId>
-      <artifactId>clojure-lang</artifactId>
-      <version>1.1.0-SNAPSHOT</version>
+      <artifactId>clojure</artifactId>
+      <version>1.1.0</version>
     </dependency>
     <dependency>
       <groupId>org.clojure</groupId>
       <artifactId>clojure-contrib</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.1.0</version>
     </dependency>
     <dependency>
       <groupId>asm</groupId>
       <artifactId>asm-commons</artifactId>
       <version>3.2</version>
     </dependency>
+    <!-- Java OpenGL bindings, commented out in favor of Penumbra -->
     <!-- <dependency> -->
-    <!--   <groupId>commons-codec</groupId> -->
-    <!--   <artifactId>commons-codec</artifactId> -->
-    <!--   <version>1.3</version> -->
+    <!--   <groupId>net.java.dev.jogl</groupId> -->
+    <!--   <artifactId>jogl</artifactId> -->
+    <!--   <version>2.0-beta10</version> -->
     <!-- </dependency> -->
-    <!-- <dependency> -->
-    <!--   <groupId>commons-fileupload</groupId> -->
-    <!--   <artifactId>commons-fileupload</artifactId> -->
-    <!--   <version>1.2.1</version> -->
-    <!-- </dependency> -->
-    <!-- <dependency> -->
-    <!--   <groupId>commons-io</groupId> -->
-    <!--   <artifactId>commons-io</artifactId> -->
-    <!--   <version>1.4</version> -->
-    <!-- </dependency> -->
-    <!-- <dependency> -->
-    <!--   <groupId>org.mortbay.jetty</groupId> -->
-    <!--   <artifactId>jetty</artifactId> -->
-    <!--   <version>6.1.6</version> -->
-    <!--   <scope>provided</scope> -->
-    <!-- </dependency> -->
-    <!-- <dependency> -->
-    <!--   <groupId>commons-httpclient</groupId> -->
-    <!--   <artifactId>commons-httpclient</artifactId> -->
-    <!--   <version>3.1</version> -->
-    <!--   <scope>test</scope> -->
-    <!-- </dependency> -->
+    <dependency>
+      <groupId>penumbra</groupId>
+      <artifactId>penumbra</artifactId>
+      <version>0.5.0</version>
+    </dependency>
   </dependencies>
 </project>
