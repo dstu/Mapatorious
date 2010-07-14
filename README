@@ -4,7 +4,10 @@ OpenGL work.
 You'll need to get Penumbra. Penumbra uses Leiningen to
 build. Get Leiningen:
 
-http://github.com/technomancy/leiningen
+cd ~/bin
+wget http://github.com/technomancy/leiningen/raw/stable/bin/lein
+chmod +x lein
+lein self-install
 
 We're targeting Clojure 1.1 for now, so we need to use the 0.5.0
 branch of Penumbra:
