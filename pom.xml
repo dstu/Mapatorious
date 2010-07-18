@@ -48,32 +48,59 @@
     </plugins>
   </build>
 
+  <repositories>
+    <repository>
+      <id>clojure-snapshots</id>
+      <url>http://build.clojure.org/snapshots</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>clojure-releases</id>
+      <url>http://build.clojure.org/snapshots</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>clojars.org</id>
+      <url>http://clojars.org/repo</url>
+      <releases>
+	<enabled>true</enabled>
+      </releases>
+      <snapshots>
+	<enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
   <dependencies>
     <dependency>
       <groupId>org.clojure</groupId>
       <artifactId>clojure</artifactId>
-      <version>1.1.0</version>
+      <version>1.2.0-beta1</version>
     </dependency>
     <dependency>
       <groupId>org.clojure</groupId>
       <artifactId>clojure-contrib</artifactId>
+      <version>1.2.0-beta1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.clojars.robertpfeiffer</groupId>
+      <artifactId>swank-clojure</artifactId>
       <version>1.1.0</version>
     </dependency>
     <dependency>
-      <groupId>asm</groupId>
-      <artifactId>asm-commons</artifactId>
-      <version>3.2</version>
-    </dependency>
-    <!-- Java OpenGL bindings, commented out in favor of Penumbra -->
-    <!-- <dependency> -->
-    <!--   <groupId>net.java.dev.jogl</groupId> -->
-    <!--   <artifactId>jogl</artifactId> -->
-    <!--   <version>2.0-beta10</version> -->
-    <!-- </dependency> -->
-    <dependency>
       <groupId>penumbra</groupId>
       <artifactId>penumbra</artifactId>
-      <version>0.5.0</version>
+      <version>0.6.0-SNAPSHOT</version>
     </dependency>
   </dependencies>
 </project>

@@ -1,31 +1,6 @@
 Building is with Maven 2. We use Penumbra for Clojure-native
-OpenGL work.
-
-You'll need to get Penumbra. Penumbra uses Leiningen to
-build. Get Leiningen:
-
-cd ~/bin
-wget http://github.com/technomancy/leiningen/raw/stable/bin/lein
-chmod +x lein
-lein self-install
-
-We're targeting Clojure 1.1 for now, so we need to use the 0.5.0
-branch of Penumbra:
-
-git clone http://github.com/ztellman/penumbra.git
-cd penumbra
-git checkout -b 0.5.0 origin/0.5.0
-lein deps
-lein native-deps
-lein install
-lein test
-
-This will get all the dependencies of Penumbra and should show
-some or all of the Penumbra demos. (Close the windows that "lein
-test" opens using your window manager to dismiss them.)
-
-Since our own code is still being managed with Maven, use it to
-build and run our project.
+OpenGL work. We target Penumbra 0.6 and Clojure 1.2. Maven
+should automagically handle all the dependencies for you.
 
 Compile:
 
@@ -35,5 +10,26 @@ Run:
 
 mvn clojure:run
 
+Open a REPL:
+
+mvn clojure:repl
+
 Check the pom.xml and Google for Maven settings for build
 configuration options.
+
+This hasn't been tested with code that really uses Penumbra. If
+you have problems with Penumbra, you'll need to install it
+yourself. Penumbra uses Leiningen to build. Get Leiningen:
+
+cd ~/bin
+wget http://github.com/technomancy/leiningen/raw/master/bin/lein
+chmod +x lein
+lein self-install
+
+Next, install Penumbra:
+
+git clone http://github.com/ztellman/penumbra.git
+cd penumbra
+lein deps
+lein native-deps
+lein install
