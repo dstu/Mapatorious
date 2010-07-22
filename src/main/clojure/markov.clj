@@ -53,3 +53,4 @@
     
 (def england (file-to-corpus "england"))
 (def germany (file-to-corpus "german"))
+(def aus (file-to-corpus "australia"))
