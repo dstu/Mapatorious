@@ -80,7 +80,7 @@
   (loop [c n
          acc (list 0 s)]
     (if (<= c 0)
-        acc
+        (list (bit-shift-right (first acc) 1) (fnext acc))
         (let [sp (clock-sg (fnext acc))
               gt (LSB ((accessor sg :gate) sp))
               st (LSB ((accessor sg :stream) sp))
@@ -90,5 +90,13 @@
               (dec c) 
               (list (bang-bit (bit-shift-left nm 1) 1 st) sp))
             (recur c (list nm sp)))))))
+
+(defn get-ints [s n b]
+  (loop [c n
+         acc (list '() s)]
+    (if (<= c 0)
+        (first acc)
+        (let [accp (get-bits (fnext acc) b)]
+          (recur (dec c) (list (cons (first accp) (first acc)) (fnext accp)))))))
 
 (def exsg (struct sg inner outer))
