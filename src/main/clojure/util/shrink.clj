@@ -43,6 +43,7 @@
     ((accessor LFSR :length) l)))
 
 (defn clock [l]
+  "Advance a linear-feedback shift register"
   (let [s ((accessor LFSR :state) l)
         t ((accessor LFSR :trinomial) l)
         a (bit-test s ((accessor trinomial :a) t))
@@ -56,6 +57,7 @@
     ))
 
 (defn clock-sg [s]
+  "Clocks a shrinking generator"
   (let [in  ((accessor sg :stream) s)
         out ((accessor sg :gate) s)]
         (struct sg 
@@ -63,6 +65,7 @@
                 (clock out))))
 
 (defn clock-n-sg [s n]
+  "Clocks a shrinking generator n times"
   (loop [c n 
          g s]
     (if (zero? c)
@@ -70,11 +73,13 @@
         (recur (dec c) (clock-sg g)))))
 
 (defn buffer-sg [s]
+  "Buffers a shrinking generator so that the seed does not appear in the output"
   (let [lenA ((accessor LFSR :length) ((accessor sg :stream) s))
         lenB ((accessor LFSR :length) ((accessor sg :gate) s))]
     (clock-n-sg s (max lenA lenB))))
 
 (defn get-bits [s n]
+  "Provide n pseudo-random bits. Returns the bits and updated generator"
   (loop [c n
          acc (list 0 s)]
     (if (<= c 0)
@@ -90,6 +95,7 @@
             (recur c (list nm sp)))))))
 
 (defn nearest-2 [n]
+  "Find the smallest value 2^x > n, where x is an integer" 
   (int (Math/ceil 
          (/ (Math/log n) 
             (Math/log 2)))))
@@ -98,7 +104,6 @@
 ;; Uses rejection sampling. In the worst case,
 ;; the expected number of numbers generated is
 ;; equal to 2.
-
 (defn get-int [s rng]
   (let [bits (nearest-2 rng)]
     (loop [nm rng
