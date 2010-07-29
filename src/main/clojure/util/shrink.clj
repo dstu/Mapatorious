@@ -27,8 +27,6 @@
     :state 1
     :length 17))
 
-
-
 (defn rekey [l x]
   (struct-map LFSR
     :trinomial ((accessor LFSR :trinomial) l)
@@ -91,12 +89,40 @@
               (list (bang-bit (bit-shift-left nm 1) 1 st) sp))
             (recur c (list nm sp)))))))
 
-(defn get-ints [s n b]
-  (loop [c n
-         acc (list '() s)]
-    (if (<= c 0)
-        (first acc)
-        (let [accp (get-bits (fnext acc) b)]
-          (recur (dec c) (list (cons (first accp) (first acc)) (fnext accp)))))))
+(defn nearest-2 [n]
+  (int (Math/ceil 
+         (/ (Math/log n) 
+            (Math/log 2)))))
 
-(def exsg (struct sg inner outer))
+;; Generate an integer in the range [0,range)
+;; Uses rejection sampling. In the worst case,
+;; the expected number of numbers generated is
+;; equal to 2.
+
+(defn get-int [s rng]
+  (let [bits (nearest-2 rng)]
+    (loop [nm rng
+           sg s]
+      (if (>= nm rng)
+        (let [x   (get-bits sg bits)
+              sgp (fnext x)
+              nmp (first x)]
+          (recur nmp sgp))
+        (list nm sg)))))
+
+(defn knuth-shuffle [s v]
+   (loop [c (dec (count v))
+          sv v
+          sg s]
+     (if (<= c 0)
+       (list sv sg)
+       (let [res (get-int sg c)
+             nm  (first res)
+             ng  (fnext res)
+             tmpv (nth sv c)
+             vnext (assoc 
+                     (assoc sv c (nth sv nm))
+                     nm tmpv)]
+         (recur (dec c) vnext ng)))))
+
+(def exsg (buffer-sg (struct sg inner outer)))
