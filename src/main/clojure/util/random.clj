@@ -33,4 +33,16 @@
     [s split-gen]
      s))
 
-(take 1000 (value-seq seed exsg))
+;; As unsatisfying as this code is, it worked on our first try.
+(defn sample-until [predicate rv]
+  (domonad random-m
+    [gen split-gen]
+    (loop [g gen]
+      (let [n (rv g)]
+        (if (predicate (first n))
+            (first n)
+            (recur (second n)))))))
+
+(println (take 100 (value-seq (sample-until #(>= % 100) (get-int 101)) exsg)))
+
+
