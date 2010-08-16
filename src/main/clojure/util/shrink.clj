@@ -1,8 +1,8 @@
-;; A shrinking generator
-
 (defstruct sg :stream :gate)
 (defstruct LFSR :trinomial :state :length)
 (defstruct trinomial :a :b)
+
+(derive ::ShrinkingGenerator ::PRNG)
 
 (defn xor [a b] (not (= a b)))
 
@@ -28,9 +28,14 @@
     :length 17))
 
 (defn rekey [l x]
-  (struct-map LFSR
-    :trinomial ((accessor LFSR :trinomial) l)
-    :state x))
+  (assoc l :state x))
+
+(defn rekey-shrink [s sbits gbits]
+  (let [gate ((accessor sg :gate) s)
+        strm ((accessor sg :stream) s)]
+    (assoc
+      (assoc s :stream (rekey strm sbits))
+      :gate (rekey gate gbits))))
 
 (defn LSB [l]
   (bit-test 
@@ -94,6 +99,16 @@
               (list (bang-bit (bit-shift-left nm 1) 1 st) sp))
             (recur c (list nm sp)))))))
 
+(defn split-gen [s]
+  (let [strm ((accessor LFSR :length) ((accessor sg :stream) s))
+        gate ((accessor LFSR :length) ((accessor sg :gate) s))
+        n    (get-bits s strm)
+        m    (get-bits (second n) gate)
+        sbit (first n)
+        gbit (first m)
+        sg   (second m)]
+    (list sg (rekey-shrink s sbit gbit))))
+
 (defn nearest-2 [n]
   "Find the smallest value 2^x > n, where x is an integer" 
   (int (Math/ceil 
@@ -104,30 +119,31 @@
 ;; Uses rejection sampling. In the worst case,
 ;; the expected number of numbers generated is
 ;; equal to 2.
-(defn get-int [s rng]
-  (let [bits (nearest-2 rng)]
-    (loop [nm rng
-           sg s]
-      (if (>= nm rng)
-        (let [x   (get-bits sg bits)
-              sgp (fnext x)
-              nmp (first x)]
-          (recur nmp sgp))
-        (list nm sg)))))
+(defn get-int [rng]
+  (fn [s]
+    (let [bits (nearest-2 rng)]
+      (loop [nm rng
+             sg s]
+        (if (>= nm rng)
+          (let [x   (get-bits sg bits)
+                sgp (fnext x)
+                nmp (first x)]
+            (recur nmp sgp))
+          (list nm sg))))))
 
-(defn knuth-shuffle [s v]
-   (loop [c (dec (count v))
-          sv v
-          sg s]
-     (if (<= c 0)
-       (list sv sg)
-       (let [res (get-int sg c)
-             nm  (first res)
-             ng  (fnext res)
-             tmpv (nth sv c)
-             vnext (assoc 
-                     (assoc sv c (nth sv nm))
-                     nm tmpv)]
-         (recur (dec c) vnext ng)))))
+;;(defn knuth-shuffle [s v]
+;;   (loop [c (dec (count v))
+;;          sv v
+;;          sg s]
+;;     (if (<= c 0)
+;;       (list sv sg)
+;;       (let [res ((get-int c) sg))
+;;             nm  (first res)
+;;             ng  (fnext res)
+;;             tmpv (nth sv c)
+;;             vnext (assoc 
+;;                     (assoc sv c (nth sv nm))
+;;                     nm tmpv)]
+;;         (recur (dec c) vnext ng)))))
 
 (def exsg (buffer-sg (struct sg inner outer)))
