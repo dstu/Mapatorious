@@ -4,6 +4,7 @@
 
 ;; Namespace is lamed up. Stu -- can you fix this, plz?
 (load-file "shrink.clj")
+(load-file "hull.clj")
 
 (defmonad random-m
   [m-result     (fn m-result-random [v]
@@ -43,6 +44,19 @@
             (first n)
             (recur (second n)))))))
 
-(println (take 100 (value-seq (sample-until #(>= % 100) (get-int 101)) exsg)))
+(defn random-point [bound]
+  (let [x0 (nth bound 0)
+        x1 (nth bound 1)
+        y0 (nth bound 2)
+        y1 (nth bound 3)]
+    (domonad random-m
+      [x (get-int (- x1 x0))
+       y (get-int (- y1 y0))]
+       (struct point 
+         (+ x x0)
+         (+ y y0)))))
+        
+        
 
-
+;;(println (take 100 (value-seq (sample-until #(>= % 100) (get-int 101)) exsg)))
+(println (take 10 (value-seq (random-point (bounding-box example-hull)) exsg)))

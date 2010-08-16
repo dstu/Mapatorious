@@ -3,6 +3,7 @@
   (:refer-clojure :exclude (deftype))
   (:use clojure.contrib.types))
 
+(defstruct rectangle :x0 :x1 :y0 :y1)
 (defstruct point :x :y)
 (defn get-x [p] (:x p))
 (defn get-y [p] (:y p))
@@ -33,6 +34,15 @@
         cnt (count ns)
         mid (bit-shift-right cnt 1)]
       (nth ns mid)))
+
+(defn bounding-box [h]
+  (let [xs (sort (map :x h))
+        ys (sort (map :y h))]
+    (list  
+      (first xs)
+      (last  xs)
+      (first ys)
+      (last  ys))))
 
 (def example-hull
   (vector
@@ -85,7 +95,6 @@
         (let [med (median-by #(ac (get-point %)) h)
               pred #(< (ac (get-point %)) (ac (get-point med)))
               test #(< (ac %) (ac (get-point med)))]
-              ;;test #(println (get-point med))]
           (if (> (count h) 2)
               (node 
                 test
