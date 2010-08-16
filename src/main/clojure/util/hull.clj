@@ -8,6 +8,24 @@
 (defn get-y [p] (:y p))
 
 (defstruct edge :a :b)
+(defstruct angle :point :cw :ccw)
+(defn get-point [a] (:point a))
+
+
+(defn cw? [e q]
+  (let [e0  (:a e)
+        e1  (:b e)
+        e0x (:x e0)
+        e0y (:y e0)
+        e1x (:x e1)
+        e1y (:y e1)
+        qx  (:x q)
+        qy  (:y q)]
+    (>= 0 (- (* (- e1x e0x) 
+                (- qy e0y)) 
+             (* (- e1y e0y) 
+                (- qx e0x))
+    ))))
 
 ;; TODO Replace this with linear time median finding
 (defn median-by [f ns]
@@ -26,44 +44,57 @@
 
 (defadt ::bsp-tree
   empty-tree
-  (leaf test)
+  (leaf hull-edge)
   (node test left-tree right-tree))
 
 (defn bsp-test [t p]
   (match t
     empty-tree false
-    (leaf test) (test p)
-    (node ts l r) (if (ts p) (bsp-test l p)
-                             (bsp-test r p))))
+    (leaf e) (cw? e p)
+    (node ts l r)
+      (if (ts p) 
+        (bsp-test l p)
+        (bsp-test r p))))
 
 ;; Given a hull as a set of points, return the edges
 ;; Assumes that the hull is sorted clockwise or counter-clockwise   
 
 (defn hull-edges [h]
-  (let [sz (count h)
-        edges 
-          (map (fn [x] (struct edge (nth h x)
-                                    (nth h (mod (inc x) sz)))) 
-               (range 0 sz))]
-    edges))
+  (let [sz (count h)]
+    (map 
+      (fn [x] 
+        (struct edge 
+                (nth h x)
+                (nth h (mod (inc x) sz))))
+      (range 0 sz))))
 
+(defn to-angles [h]
+  (let [edges (hull-edges h)
+        sz    (count h)
+        ccw  #(if (< (dec %) 0) (dec sz) (dec %))]
+    (map #(struct angle 
+                  (nth h %) 
+                  (:b (nth edges %))
+                  (:a (nth edges (ccw %))))
+         (range 0 sz))))
 
 (defn build-bsp [h dir]
   (let [ac (if dir get-x get-y)]
-    (if (> (count h) 1)
-      (let [med (median-by ac h)
-            pred #(< (ac %) med)]
-        (node 
-            #(< (ac %) med)
-            (build-bsp (filter pred h) (not dir))
-            (build-bsp (remove pred h) (not dir))))
-        (if (empty h)
-            empty-tree
-            (leaf (first h))))))
+    (if (empty? h)
+        empty-tree
+        (let [med (median-by #(ac (get-point %)) h)
+              pred #(< (ac (get-point %)) (ac (get-point med)))
+              test #(< (ac %) (ac (get-point med)))]
+              ;;test #(println (get-point med))]
+          (if (> (count h) 2)
+              (node 
+                test
+                (build-bsp (filter pred h) (not dir))
+                (build-bsp (remove pred h) (not dir)))
+              (node
+                test
+                (leaf (struct edge (:ccw med) (:point med)))
+                (leaf (struct edge (:point med) (:cw med))))
+            )))))
       
-
-
-(median-by get-x (vector (struct point 3 1) (struct point 2 4)))
-(median-by get-y (vector (struct point 3 1) (struct point 2 4)))
-
-(hull-edges example-hull)
+(def exbsp (build-bsp (to-angles example-hull) true))
