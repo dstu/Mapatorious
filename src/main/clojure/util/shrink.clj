@@ -100,14 +100,19 @@
             (recur c (list nm sp)))))))
 
 (defn split-gen [s]
-  (let [strm ((accessor LFSR :length) ((accessor sg :stream) s))
-        gate ((accessor LFSR :length) ((accessor sg :gate) s))
-        n    (get-bits s strm)
-        m    (get-bits (second n) gate)
-        sbit (first n)
-        gbit (first m)
-        sg   (second m)]
-    (list sg (rekey-shrink s sbit gbit))))
+  (loop [gen s]
+    (let [strm ((accessor LFSR :length) ((accessor sg :stream) gen))
+          gate ((accessor LFSR :length) ((accessor sg :gate) gen))
+          n    (get-bits gen strm)
+          m    (get-bits (second n) gate)
+          sbit (first n)
+          gbit (first m)
+          sg   (second m)]
+      (if (and 
+            (not (zero? sbit)) 
+            (not (zero? gbit)))
+        (list sg (rekey-shrink gen sbit gbit))
+        (recur sg)))))
 
 (defn nearest-2 [n]
   "Find the smallest value 2^x > n, where x is an integer" 
