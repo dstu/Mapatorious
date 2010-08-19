@@ -26,13 +26,6 @@
                 (- qx e0x))
     ))))
 
-;; TODO Replace this with linear time median finding
-(comment (defn median-by [f ns]
-  (let [ns  (sort-by f ns)
-        cnt (count ns)
-        mid (bit-shift-right cnt 1)]
-      (nth ns mid))))
-
 (defn bounding-box [h]
   (let [xs (sort (map :x h))
         ys (sort (map :y h))]
@@ -90,7 +83,7 @@
   (let [ac (if dir :x :y)]
     (if (empty? h)
         empty-tree
-        (let [med (median-by #(ac (:point %)) h)
+        (let [med (median-by h #(ac (:point %)))
               pred #(< (ac (:point %)) (ac (:point med)))
               test #(< (ac %) (ac (:point med)))]
           (if (> (count h) 2)
