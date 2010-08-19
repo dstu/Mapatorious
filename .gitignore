@@ -1,2 +1,5 @@
 target/*
+lib/*
+META-INF/MANIFEST.MF
+native/*
 *~
