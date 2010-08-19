@@ -1,12 +1,16 @@
 (ns 
-  mapatorious.util.random
+  clojure.util.random
   (:use clojure.contrib.monads))
 
+(defmulti get-int   :PRNG)
+(defmulti get-bits  :PRNG)
+(defmulti get-float :PRNG)
 (defmulti clock-rng :PRNG)
 (defmulti split-gen :PRNG)
+(defmulti peek-gen  :PRNG)
 
-(defn get-bits [g n]
-  "Provide n pseudo-random bits. Returns the bits and updated generator"
+(defmethod get-bits :default [n g]
+  "Generate n pseudo-random bits."
   (loop [c n
          acc [0 g]]
     (if (<= c 0)
@@ -16,35 +20,29 @@
             np     (if b (bit-set n 1) n)]
         (recur (dec c) [np gs])))))
 
-(defn get-float [g]
-  (let [[b gs] (get-bits g 52)]
-    (- 
+(defmethod get-float :default [g]
+  "Generate a pseudo-random float."
+  (let [[b gs] (get-bits 52 g)]
+    [(- 
       (Double/longBitsToDouble (bit-or 
         (bit-shift-left 0x3ff 52)
         b))
-    1)))
+    1) gs]))
  
-(defn nearest-2 [n]
-  "Find the smallest value 2^x > n, where x is an integer" 
-  (int (Math/ceil 
-         (/ (Math/log n) 
-            (Math/log 2)))))
-
 ;; Generate an integer in the range [0,range)
 ;; Uses rejection sampling. In the worst case,
 ;; the expected number of numbers generated is
 ;; equal to 2.
-(defn get-int [rng]
-  (fn [s]
-    (let [bits (nearest-2 rng)]
-      (loop [nm rng
-             sg s]
-        (if (>= nm rng)
-          (let [x   (get-bits sg bits)
-                sgp (fnext x)
+(defmethod get-int :default [n g]
+    (let [bit-count (int (Math/ceil (/ (Math/log n) (Math/log 2))))]
+      (loop [nm n
+             gs g]
+        (if (>= nm n)
+          (let [x   (get-bits gs bit-count)
+                gsp (fnext x)
                 nmp (first x)]
-            (recur nmp sgp))
-          (list nm sg))))))
+            (recur nmp gsp))
+          (list nm gs)))))
 
 (defmonad random-m
   [m-result     (fn m-result-random [v]
