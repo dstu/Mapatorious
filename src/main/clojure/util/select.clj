@@ -24,14 +24,15 @@
 (defn select [l k]
   (if (< (count l) 10)
     (nth (sort l) k)
-    (let [meds    (map median-slow (partition 5 l))
-          M       (select meds (bit-shift-right (count meds) 1))]
-        M)))
-;;        (if (<= (count L1))
-;;          (select L1 k)
-;;          (if (> k csum)
-;;            (select L3 (- k csum))
-;;            M)))))
+    (let [meds    (map median-slow (partition-all 5 l))
+          M       (select meds (bit-shift-right (count meds) 1))
+          [L1 L2 L3] (trisect M l)
+          csum    (+ (count L1) (count L2))]
+        (if (< k (count L1))
+            (select L1 k)
+            (if (> k csum)
+            (select L3 (- k csum))
+              M)))))
 
 (defn median [l]
   (select l (bit-shift-right (count l) 1)))
