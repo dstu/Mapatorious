@@ -1,16 +1,14 @@
 (ns 
   mapatorious.util.hull
   (:refer-clojure :exclude (deftype))
+  (:use clojure.util.select)
   (:use clojure.contrib.types))
 
 (defstruct rectangle :x0 :x1 :y0 :y1)
 (defstruct point :x :y)
-(defn get-x [p] (:x p))
-(defn get-y [p] (:y p))
 
 (defstruct edge :a :b)
 (defstruct angle :point :cw :ccw)
-(defn get-point [a] (:point a))
 
 
 (defn cw? [e q]
@@ -29,11 +27,11 @@
     ))))
 
 ;; TODO Replace this with linear time median finding
-(defn median-by [f ns]
+(comment (defn median-by [f ns]
   (let [ns  (sort-by f ns)
         cnt (count ns)
         mid (bit-shift-right cnt 1)]
-      (nth ns mid)))
+      (nth ns mid))))
 
 (defn bounding-box [h]
   (let [xs (sort (map :x h))
@@ -89,12 +87,12 @@
          (range 0 sz))))
 
 (defn build-bsp [h dir]
-  (let [ac (if dir get-x get-y)]
+  (let [ac (if dir :x :y)]
     (if (empty? h)
         empty-tree
-        (let [med (median-by #(ac (get-point %)) h)
-              pred #(< (ac (get-point %)) (ac (get-point med)))
-              test #(< (ac %) (ac (get-point med)))]
+        (let [med (median-by #(ac (:point %)) h)
+              pred #(< (ac (:point %)) (ac (:point med)))
+              test #(< (ac %) (ac (:point med)))]
           (if (> (count h) 2)
               (node 
                 test

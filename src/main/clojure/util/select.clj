@@ -22,7 +22,7 @@
 
 (defn kth-by [l k f]
   (if (< (count l) 10)
-    (nth (sort l) k)
+    (nth (sort-by f l) k)
     (let [meds    (map (median-slow f) (partition-all 5 l))
           M       (kth-by meds (bit-shift-right (count meds) 1) f)
           [L1 L2] (bisect M l)]
@@ -31,10 +31,10 @@
             (kth-by L2 (- k (count L1)) f)))))
 
 (defn kth [l k]
-  (kth-by l k <))
+  (kth-by l k identity))
 
 (defn median [l]
-  (kth-by l (bit-shift-right (count l) 1) <))
+  (kth-by l (bit-shift-right (count l) 1) identity))
 
 (defn median-by [l f]
   (kth-by l (bit-shift-right (count l) 1) f))
