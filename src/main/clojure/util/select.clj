@@ -1,11 +1,12 @@
 (ns
   clojure.util.select)
 
-(defn median-slow [ns]
-  (let [ns  (sort ns)
-        cnt (count ns)
-        mid (bit-shift-right cnt 1)]
-    (nth ns mid)))
+(defn median-slow [f]
+  (fn [ns]
+    (let [ns  (sort-by f ns)
+          cnt (count ns)
+          mid (bit-shift-right cnt 1)]
+      (nth ns mid))))
 
 (defn trisect [f n]
   (loop [ns n
@@ -20,19 +21,38 @@
             (if (< f x)
               [a b (conj c x)]
               [a (conj b x) c])))))))
-        
-(defn select [l k]
+       
+(defn bisect [f n]
+  (loop [ns n
+        [a b] [[] []]]
+    (if (empty? ns)
+      [a b]
+      (recur
+        (next ns)
+        (let [x (first ns)]
+          (if (> f x)
+            [(conj a x) b]
+            [a (conj b x)]))))))
+
+
+(defn kth-by [l k f]
   (if (< (count l) 10)
     (nth (sort l) k)
-    (let [meds    (map median-slow (partition-all 5 l))
-          M       (select meds (bit-shift-right (count meds) 1))
+    (let [meds    (map (median-slow f) (partition-all 5 l))
+          M       (kth-by meds (bit-shift-right (count meds) 1) f)
           [L1 L2 L3] (trisect M l)
           csum    (+ (count L1) (count L2))]
         (if (< k (count L1))
-            (select L1 k)
+            (kth-by L1 k f)
             (if (> k csum)
-            (select L3 (- k csum))
+            (kth-by L3 (- k csum) f)
               M)))))
 
+(defn kth [l k]
+  (kth-by l k <))
+
 (defn median [l]
-  (select l (bit-shift-right (count l) 1)))
+  (kth-by l (bit-shift-right (count l) 1) <))
+
+(defn median-by [l f]
+  (kth-by l (bit-shift-right (count l) 1) f))
