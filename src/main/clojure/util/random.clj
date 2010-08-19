@@ -25,7 +25,7 @@
   (let [[b gs] (get-bits 52 g)]
     [(- 
       (Double/longBitsToDouble (bit-or 
-        (bit-shift-left 0x3ff 52)
+        0x3ff0000000000
         b))
     1) gs]))
  
