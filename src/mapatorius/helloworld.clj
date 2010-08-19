@@ -3,9 +3,6 @@
   (:require [penumbra.app :as app]
 	    [penumbra.text :as text]))
 
-;; Dimension of window
-(def *dim* (vec2 800 600))
-
 ;; Used as callback
 (defn init [state]
   "Set up game state once, at beginning of execution."
@@ -24,4 +21,4 @@
   "Start the hello world app."
   (app/start
    {:init init, :display display}
-   {:dim *dim*}))
+   {}))
