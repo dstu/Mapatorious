@@ -2,15 +2,16 @@
   clojure.util.random
   (:use clojure.contrib.monads))
 
-(defmulti get-int   :PRNG)
-(defmulti get-bits  :PRNG)
-(defmulti get-float :PRNG)
-(defmulti clock-rng :PRNG)
-(defmulti split-gen :PRNG)
-(defmulti peek-gen  :PRNG)
+(defmulti get-int    :PRNG)
+(defmulti get-bits   :PRNG)
+(defmulti get-double :PRNG)
+(defmulti get-normal :PRNG)
+(defmulti clock-rng  :PRNG)
+(defmulti split-gen  :PRNG)
+(defmulti peek-gen   :PRNG)
 
 (defmethod get-bits :default [n g]
-  "Generate n pseudo-random bits."
+  "Return n pseudo-random bits and an updated generator."
   (loop [c n
          acc [0 g]]
     (if (<= c 0)
@@ -20,20 +21,43 @@
             np     (if b (bit-set n 1) n)]
         (recur (dec c) [np gs])))))
 
-(defmethod get-float :default [g]
-  "Generate a pseudo-random float."
+
+;; Generate pseudo-random uniformly distributed floats [0,1)
+;; This uses the method described by Saito & Matsumoto
+;; at MCQMC'08.
+;; We generate a 52-bit significand.
+;; The exponential part is a constant that puts us on the interval [1,2)
+;; The result is then shifted to the interval [0,1).
+
+(defmethod get-double :default [g]
+  "Returns a uniformly distributed IEEE float and an updated generator."
   (let [[b gs] (get-bits 52 g)]
     [(- 
       (Double/longBitsToDouble (bit-or 
-        0x3ff0000000000
+        0x3ff0000000000000
         b))
     1) gs]))
- 
-;; Generate an integer in the range [0,range)
-;; Uses rejection sampling. In the worst case,
+
+;; Generate pseudo-random normally distributed floats
+;; mean = 0, stdev = 1
+;; Uses the Box-Muller transform. 
+;; We could generate two numbers, but it clutters the interface.
+;; There's probably a good solution to this.
+
+(defmethod get-normal :default [g]
+  "Returns a normally distributed IEEE float and an updated generator."
+  (let [[a g1] (get-double g)
+        [b g2] (get-double g1)
+        n  (Math/sqrt (* -2 (Math/log a)))]
+    (* n (Math/cos (* 2 Math/PI b)))))
+      
+;; Generates an integer in the range [0,range)
+;; using rejection sampling. In the worst case,
 ;; the expected number of numbers generated is
 ;; equal to 2.
+
 (defmethod get-int :default [n g]
+    "Returns a uniformly distributed integer and an updated generator."
     (let [bit-count (int (Math/ceil (/ (Math/log n) (Math/log 2))))]
       (loop [nm n
              gs g]
