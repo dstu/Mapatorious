@@ -8,6 +8,7 @@
           mid (bit-shift-right cnt 1)]
       (nth ns mid))))
 
+;; TODO We can use group-by here.
 (defn bisect [f n]
   (loop [ns n
         [a b] [[] []]]
