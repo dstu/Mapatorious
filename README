@@ -1,3 +1,5 @@
+Use lein 1.2. Other versions are broken.
+
 Building is with Maven 2. We use Penumbra for Clojure-native
 OpenGL work. We target Penumbra 0.6 and Clojure 1.2. Maven
 should automagically handle all the dependencies for you.
