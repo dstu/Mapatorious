@@ -29,8 +29,11 @@
     :gate (assoc (:gate s) :state gb)))
 
 (defmethod split-gen :Shrink [s]
-  (let [[st gn] (get-bits (:length (:stream s)) s)
-        [gt gp] (get-bits (:length (:gate s))   s)]
-    [gp (rekey s st gt)]))
+  (loop [gen s]
+    (let [[st gn] (get-bits (:length (:stream s)) gen)
+          [gt gp] (get-bits (:length (:gate s))   gn)]
+      (if (and (< 0 st) (< 0 gt))
+        [gp (rekey s st gt)]
+        (recur gp)))))
 
 (def example-shrink (ShrinkGen inner outer))
