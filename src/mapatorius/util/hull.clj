@@ -1,15 +1,16 @@
 (ns 
   mapatorius.util.hull
   (:refer-clojure :exclude (deftype))
-  (:use clojure.util.select)
+  (:use mapatorius.util.select)
   (:use clojure.contrib.types))
 
 (defstruct rectangle :x0 :x1 :y0 :y1)
 (defstruct point :x :y)
 
+(defn Point [x y] (struct point x y))
+
 (defstruct edge :a :b)
 (defstruct angle :point :cw :ccw)
-
 
 (defn cw? [e q]
   (let [e0  (:a e)
@@ -37,25 +38,26 @@
 
 (def example-hull
   (vector
-    (struct point 0 1)
-    (struct point 1 2)
-    (struct point 5 3)
-    (struct point 4 1)
-    (struct point 3 0)))
+    (Point 0.0 1.0)
+    (Point 1.0 2.0)
+    (Point 5.0 3.0)
+    (Point 4.0 1.0)
+    (Point 3.0 0.0)))
 
 (defadt ::bsp-tree
   empty-tree
   (leaf hull-edge)
   (node test left-tree right-tree))
 
-(defn bsp-test [t p]
-  (match t
-    empty-tree false
-    (leaf e) (cw? e p)
-    (node ts l r)
-      (if (ts p) 
-        (bsp-test l p)
-        (bsp-test r p))))
+(defn inside-hull? [t p]
+  (loop [tr t]
+    (match tr
+      empty-tree false
+      (leaf e) (cw? e p)
+      (node ts l r)
+        (if (ts p) 
+          (recur l)
+          (recur r)))))
 
 ;; Given a hull as a set of points, return the edges
 ;; Assumes that the hull is sorted clockwise or counter-clockwise   
