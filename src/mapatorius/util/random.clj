@@ -1,5 +1,5 @@
 (ns 
-  clojure.util.random
+  mapatorius.util.random
   (:use clojure.contrib.monads))
 
 (defmulti get-int    :PRNG)

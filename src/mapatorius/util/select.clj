@@ -1,5 +1,5 @@
 (ns
-  clojure.util.select)
+  mapatorius.util.select)
 
 (defn median-slow [f]
   (fn [ns]

@@ -1,5 +1,5 @@
 (ns 
-  mapatorious.util.hull
+  mapatorius.util.hull
   (:refer-clojure :exclude (deftype))
   (:use clojure.util.select)
   (:use clojure.contrib.types))

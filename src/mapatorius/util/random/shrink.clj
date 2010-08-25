@@ -1,9 +1,9 @@
 (ns
-  clojure.util.random.shrink
-  (:require clojure.util.random)
-  (:require clojure.util.random.lfsr)
-  (:use clojure.util.random)
-  (:use clojure.util.random.lfsr))
+  mapatorius.util.random.shrink
+  (:require mapatorius.util.random)
+  (:require mapatorius.util.random.lfsr)
+  (:use mapatorius.util.random)
+  (:use mapatorius.util.random.lfsr))
 
 (defstruct shrink-gen :PRNG :stream :gate)
 

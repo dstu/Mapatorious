@@ -1,7 +1,7 @@
 (ns
-  clojure.util.random.lfsr
-  (:require clojure.util.random)
-  (:use  clojure.util.random))
+  mapatorius.util.random.lfsr
+  (:require mapatorius.util.random)
+  (:use  mapatorius.util.random))
 
 (defstruct lfsr :PRNG :polynomial :state :length)
 (defstruct trinomial :Polynomial :a :b)
