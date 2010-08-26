@@ -7,21 +7,14 @@
   (:require [mapatorius.util.random :as rng])
   (:require [mapatorius.util.random.shrink :as shrink]))
 
-(defn init [state]
-  (enable :depth-test)
-  (enable :multisample)
-  (depth-test :lequal)
-  (hint :perspective-correction-hint :nicest)
-  (hint :polygon-smooth-hint :nicest)
-  (app/vsync! true)
-  state)
-
 (defn make-point [p]
-  (list
-    (vertex (+ (:x p) 0.2) (+ (:y p) 0.2) 0)
-    (vertex (- (:x p) 0.2) (+ (:y p) 0.2) 0)
-    (vertex (- (:x p) 0.2) (- (:y p) 0.2) 0)
-    (vertex (+ (:x p) 0.2) (- (:y p) 0.2) 0)))
+  (do
+    (println [(+ (:x p) 0.1) (+ (:y p) 0.1) 0])
+    (list
+      (vertex (+ (:x p) 0.1) (+ (:y p) 0.1) 0)
+      (vertex (- (:x p) 0.1) (+ (:y p) 0.1) 0)
+      (vertex (- (:x p) 0.1) (- (:y p) 0.1) 0)
+      (vertex (+ (:x p) 0.1) (- (:y p) 0.1) 0))))
 
 
 (defn reshape [[x y width height] state]
@@ -58,12 +51,25 @@
                 p
                 (recur gs)))))))
 
+(defn to-list [lst]
+  (loop [l lst
+         acc (list)]
+    (if (empty? l)
+        acc
+        (recur (next l)
+              (cons (first l) acc)))))
+
 (def some-points
-  (map make-point
-  (take 100
-    (rng/value-seq 
-      (sample-hull hull/example-hull) 
-      shrink/example-shrink))))
+  (let [pt (to-list 
+             (take 10
+                 (rng/value-seq 
+                   (sample-hull hull/example-hull) 
+                    shrink/example-shrink)))]
+    (do
+      (map make-point pt))))
+
+(println (make-point {:x 2.16 :y 2.09}))
+(println some-points)
 
 (defn display [[delta time] state]
   (translate 0 0 -20)
@@ -72,7 +78,24 @@
   (draw-quads          ;; x y z
     (color 1 0 0)
       (make-square 0 0 0 0.5)
-      some-points))
+      (list
+      (make-point {:x 2.16 :y 2.09})
+      (make-point {:x 1.49 :y 1.89}))
+      (make-square 1.65 0.92 0 0.1)
+      (make-square 4.40 2.02 0 0.1)
+      (make-square 3.60 2.48 0 0.1)
+      (make-square 3.86 1.84 0 0.1)
+      (make-square 1.23 0.79 0 0.1)))
+
+
+(defn init [state]
+  (enable :depth-test)
+  (enable :multisample)
+  (depth-test :lequal)
+  (hint :perspective-correction-hint :nicest)
+  (hint :polygon-smooth-hint :nicest)
+  (app/vsync! true)
+  state)
 
 (app/start
   {:display display, :reshape reshape, :mouse-drag mouse-drag, :init init}
