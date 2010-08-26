@@ -18,6 +18,10 @@
     :rot-x (+ (:rot-x state) dy)
     :rot-y (+ (:rot-y state) dx)))
 
+(def gen (rng/split-gen shrink/example-shrink))
+(def gen1 (first gen))
+(def gen2 (fnext gen))
+
 (defn make-square [x y z sz]
   (list
     [(+ x (* 0.7071 sz)) (+ y (* 0.7071 sz)) z]
@@ -26,9 +30,7 @@
     [(+ x (* 0.7071 sz)) (- y (* 0.7071 sz)) z]))
  
 (defn make-point [p]
-  (let [x (:x p)
-        y (:y p)]
-    (make-square x y 0 0.025)))
+  [(:x p) (:y p) (:z p)])
 
 (defn sample-hull [h]
   (monad/domonad rng/random-m
@@ -37,33 +39,33 @@
        (loop [gn gen]
          (let [[a gf] (rng/get-double gn)
                [b gs] (rng/get-double gf)
+               [c gt] (rng/get-normal gs)
            p      {:x (+ (* (- x1 x0) a) x0)
-                   :y (+ (* (- y1 y0) b) y0)}]
+                   :y (+ (* (- y1 y0) b) y0)
+                   :z (/ c 5)}]
             (if (hull/inside-hull?
                   (hull/build-bsp (hull/to-angles h) true)
                   p)
                 p
-                (recur gs)))))))
+                (recur gt)))))))
 
-(defn get-points [h]
-  (reduce concat
+(defn get-points [h g]
   (map make-point
-  (take 500
+  (take 1000
     (rng/value-seq 
-      (sample-hull h) 
-        shrink/example-shrink)))))
+      (sample-hull h) g))))
 
 (def hull1
-  (get-points hull/example-hull))
+  (get-points hull/example-hull gen1))
 
 (def hull2
-  (get-points hull/example-hull2))
+  (get-points hull/example-hull2 gen2))
 
 (defn display [[delta time] state]
   (translate -2 0 -6)
   (rotate (:rot-x state) 1 0 0)
   (rotate (:rot-y state) 0 1 0)
-  (draw-quads          ;; x y z
+  (draw-points          ;; x y z
     (color 1 0 0)
     (doall (map #(apply vertex %) hull1))
     (color 0 0 1)
