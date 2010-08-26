@@ -49,7 +49,7 @@
   (let [[a g1] (get-double g)
         [b g2] (get-double g1)
         n  (Math/sqrt (* -2 (Math/log a)))]
-    (* n (Math/cos (* 2 Math/PI b)))))
+    [(* n (Math/cos (* 2 Math/PI b))) g2]))
       
 ;; Generates an integer in the range [0,range)
 ;; using rejection sampling. In the worst case,
