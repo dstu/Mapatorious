@@ -22,4 +22,4 @@
             :stream sp)])
       [(peek-gen (:stream s)) (assoc s :gate gp)])))
 
-(def example-stop (StopGen (last (get-float inner)) (last (get-float outer))))
+(def example-gen (StopGen lfsr17-6 lfsr25-7))

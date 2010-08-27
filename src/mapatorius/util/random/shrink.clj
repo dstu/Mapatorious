@@ -36,4 +36,5 @@
         [gp (rekey s st gt)]
         (recur gp)))))
 
-(def example-shrink (ShrinkGen inner outer))
+(def example-gen (ShrinkGen lfsr31-24 lfsr17-6))
+(def example-gen2 (ShrinkGen example-gen lfsr25-7))

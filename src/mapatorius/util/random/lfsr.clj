@@ -42,8 +42,11 @@
          (bit-set sp (:length l))
          sp))]))
 
-(def inner 
-  (LFSR (Trinomial 31 24) 12 31))
+(def lfsr31-24 
+  (LFSR (Trinomial 31 24) 1398101 31))
 
-(def outer 
-  (LFSR (Trinomial 17 6) 1 17))
+(def lfsr17-6 
+  (LFSR (Trinomial 17 6) 341 17))
+
+(def lfsr25-7
+  (LFSR (Trinomial 25 7) 2847 25))
