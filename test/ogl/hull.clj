@@ -18,7 +18,7 @@
     :rot-x (+ (:rot-x state) dy)
     :rot-y (+ (:rot-y state) dx)))
 
-(def gen (rng/split-gen shrink/example-shrink))
+(def gen (rng/split-gen shrink/example-gen))
 (def gen1 (first gen))
 (def gen2 (fnext gen))
 

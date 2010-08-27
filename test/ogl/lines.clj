@@ -1,15 +1,17 @@
-(ns ogl.cloud
+(ns ogl.lines
   (:use [penumbra.opengl])
   (:require [penumbra [text :as text]])
   (:require [penumbra.app :as app])
   (:require [clojure.contrib.monads :as monad])
   (:require [mapatorius.util.hull :as hull])
   (:require [mapatorius.util.random :as rng])
+  (:require [mapatorius.util.random.shrink :as shrink])
+  (:require [mapatorius.util.random.stop :as stop])
   (:require [mapatorius.util.random.alternating :as alt]))
 
 
 (defn reshape [[x y width height] state]
-  (frustum-view 60.0 (/ (double width) height) 1.0 100.0)
+  (frustum-view 60.0 (/ (double width) height) 0.0 15.0)
   (load-identity)
   state)
 
@@ -28,18 +30,26 @@
     [a b c]))
 
 (defn point-cloud [g]
-  (take 5000
+  (take 50
     (rng/value-seq (normal-point) g)))
 
 (def cloud
   (point-cloud gen))
 
+(defn vertex-with-color [x y z]
+  (do
+    (color
+      (/ 1 (+ 1 (Math/exp x)))
+      (/ 1 (+ 1 (Math/exp y)))
+      (/ 1 (+ 1 (Math/exp z))))
+    (vertex [x y z])))
+
 (defn display [[delta time] state]
   (rotate (:rot-x state) 1 0 0)
   (rotate (:rot-y state) 0 1 0)
-  (draw-points          ;; x y z
-    (color 1 0 0)
-    (doall (map #(apply vertex %) cloud))))
+  (draw-line-strip          ;; x y z
+    (doall (map #(apply vertex-with-color %) cloud))))
+    ;;(doall (map #(apply vertex %) cloud))))
 
 (defn init [state]
   (enable :depth-test)
