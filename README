@@ -1,37 +1,20 @@
-Use lein 1.2. Other versions are broken.
+Building and running are with
+"Leiningen":http://github.com/technomancy/leiningen. We use
+"Penumbra":http://github.com/ztellman/penumbra for
+Clojure-native OpenGL work. We target Penumbra 0.6 and Clojure
+1.2. Leiningen should automagically handle all the dependencies
+for you.
 
-Building is with Maven 2. We use Penumbra for Clojure-native
-OpenGL work. We target Penumbra 0.6 and Clojure 1.2. Maven
-should automagically handle all the dependencies for you.
+Resolve dependencies:
 
-Compile:
-
-mvn compile
-
-Run:
-
-mvn clojure:run
-
-Open a REPL:
-
-mvn clojure:repl
-
-Check the pom.xml and Google for Maven settings for build
-configuration options.
-
-This hasn't been tested with code that really uses Penumbra. If
-you have problems with Penumbra, you'll need to install it
-yourself. Penumbra uses Leiningen to build. Get Leiningen:
-
-cd ~/bin
-wget http://github.com/technomancy/leiningen/raw/master/bin/lein
-chmod +x lein
-lein self-install
-
-Next, install Penumbra:
-
-git clone http://github.com/ztellman/penumbra.git
-cd penumbra
 lein deps
 lein native-deps
-lein install
+
+Open up a REPL and require some of the test packages to see how
+they work:
+
+lein repl
+(require 'some.test)
+
+Check the project.clj and Google for Leiningen settings for
+build configuration options.
