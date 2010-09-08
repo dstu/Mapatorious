@@ -5,11 +5,11 @@
   (:require [clojure.contrib.monads :as monad])
   (:require [mapatorius.util.hull :as hull])
   (:require [mapatorius.util.random :as rng])
-  (:require [mapatorius.util.random.alternating :as alt]))
+  (:require [mapatorius.util.random.stop :as stop]))
 
 
 (defn reshape [[x y width height] state]
-  (frustum-view 60.0 (/ (double width) height) 1.0 100.0)
+  (frustum-view 60.0 (/ (double width) height) 0.0 100.0)
   (load-identity)
   state)
 
@@ -18,28 +18,38 @@
     :rot-x (+ (:rot-x state) dy)
     :rot-y (+ (:rot-y state) dx)))
 
-(def gen alt/example-gen)
+(def gen1 stop/example-gen)
 
-(defn normal-point []
+
+(defn get-point [f]
   (monad/domonad rng/random-m
-    [a rng/get-normal
-     b rng/get-normal
-     c rng/get-normal]
+    [a f
+     b f
+     c f]
     [a b c]))
 
-(defn point-cloud [g]
-  (take 5000
-    (rng/value-seq (normal-point) g)))
+(defn point-cloud [n g f]
+  (let [points (take n (rng/value-seq (get-point f) g))]
+    (map (fn [[x y z]]
+      (let [luminosity (/ 1 (+ 1 (Math/sqrt (+ (* x x) (* y y) (* z z)))))]
+       [[(/ luminosity 2)  (/ luminosity 8) luminosity]
+       [x y z]])) points)))
 
-(def cloud
-  (point-cloud gen))
+(defn vertex-color [cl pt]
+  (do
+    (color cl)
+    (vertex pt)))
+
+(def cloud-normal
+  (point-cloud 5000 gen1 rng/get-normal))
 
 (defn display [[delta time] state]
+  (translate 0 0 -2)
   (rotate (:rot-x state) 1 0 0)
   (rotate (:rot-y state) 0 1 0)
   (draw-points          ;; x y z
     (color 1 0 0)
-    (doall (map #(apply vertex %) cloud))))
+    (doall (map #(apply vertex-color %) cloud-normal))))
 
 (defn init [state]
   (enable :depth-test)
