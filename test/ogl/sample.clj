@@ -2,8 +2,8 @@
   (:use [penumbra.opengl])
   (:require [penumbra [text :as text]])
   (:require [penumbra.app :as app])
-  (:require [mapatorius.util.random :as rng])
-  (:require [mapatorius.util.random.shrink :as shrink]))
+  (:require [bikeshed.random :as rng])
+  (:require [bikeshed.random.shrink :as shrink]))
 
 (defn init [state]
   (enable :depth-test)

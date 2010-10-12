@@ -3,9 +3,9 @@
   (:require [penumbra [text :as text]])
   (:require [penumbra.app :as app])
   (:require [clojure.contrib.monads :as monad])
-  (:require [mapatorius.util.hull :as hull])
-  (:require [mapatorius.util.random :as rng])
-  (:require [mapatorius.util.random.shrink :as shrink]))
+  (:require [bikeshed.hull :as hull])
+  (:require [bikeshed.random :as rng])
+  (:require [bikeshed.random.shrink :as shrink]))
 
 
 (defn reshape [[x y width height] state]
